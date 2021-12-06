@@ -55,7 +55,8 @@
   color: #fff;
 }
 
-.icons-container span {
+.icons-container span,
+.icons-container a {
   margin: 8px;
 }
 
