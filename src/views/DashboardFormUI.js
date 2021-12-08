@@ -2,6 +2,7 @@ import calendarIcon from '../assets/svg/calendar.js'
 import euroIcon from '../assets/svg/euro.js'
 import pctIcon from '../assets/svg/pct.js'
 import eyeWhite from '../assets/svg/eye_white.js'
+import downloadWhiteIcon from "../assets/svg/download_white.js"
 import { formatDate } from '../app/format.js'
 
 export const modal = () => (`
@@ -22,6 +23,8 @@ export const modal = () => (`
   `)
 
 export default (bill) => {
+  const regexFileViewable = new RegExp('^.*\.(jpg|jpeg|gif|png)$', "i");
+  const regexFileDownloadable = new RegExp('^.*\.(pdf)$', "i");
 
   return (`
     <div class="container dashboard-form" data-testid="dashboard-form">
@@ -69,9 +72,16 @@ export default (bill) => {
           <label for="file" class="bold-label">Justificatif</label>
             <div class='input-field input-flex file-flex'>
             <span id="file-name-admin">${bill.fileName}</span>
-            <div class='icons-container'>
-              <span id="icon-eye-d" data-testid="icon-eye-d" data-bill-url="${bill.fileUrl}"> ${eyeWhite} </span>
-            </div>
+            ${(regexFileViewable.test(bill.fileName)) ? (`
+              <div class='icons-container'>
+                <span id="icon-eye-d" data-testid="icon-eye-d" data-bill-url="${bill.fileUrl}"> ${eyeWhite} </span>
+              </div>
+            `) : ''}
+            ${(regexFileDownloadable.test(bill.fileName)) ? (`
+              <div class='icons-container'>
+                <a href="${bill.fileUrl}" download="${bill.fileName}" target="blank">${downloadWhiteIcon}</a>
+              </div>
+            `) : ''}
           </div>
         </div>
       </div>

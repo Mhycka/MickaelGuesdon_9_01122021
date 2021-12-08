@@ -2,7 +2,7 @@ import { fireEvent, screen } from "@testing-library/dom"
 import userEvent from '@testing-library/user-event'
 import DashboardFormUI from "../views/DashboardFormUI.js"
 import DashboardUI from "../views/DashboardUI.js"
-import Dashboard, { filteredBills, cards } from "../containers/Dashboard.js"
+import Dashboard, { filteredBills, cards, card } from "../containers/Dashboard.js"
 import { ROUTES } from "../constants/routes"
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import firebase from "../__mocks__/firebase"
@@ -88,8 +88,7 @@ describe('Given I am connected as an Admin', () => {
 
   describe('When I am on Dashboard page and I click on edit icon of a card', () => {
     test('Then, right form should be filled', () => {
-      const html = cards(bills)
-      document.body.innerHTML = html
+      bills.forEach((bill) => document.body.append(card(bill)))
 
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname })

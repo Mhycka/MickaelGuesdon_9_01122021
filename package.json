@@ -7,17 +7,24 @@
     "setupFiles": [
       "./setup-jest.js",
       "jest-localstorage-mock"
+
     ],
     "globals": {
       "window": {}
     },
     "collectCoverageFrom": [
-      "*/.{js,jsx}",
-      "!**/app/**",
-      "!**/assets/**",
-      "!**/external/**",
-      "!**/fixtures/**",
-      "!**/lcov-report/**"
+      "/.{js,jsx}",
+      "!/app/",
+      "!/assets/",
+      "!/external/",
+      "!/fixtures/",
+      "!/lcov-report/*"
+    ],
+    "reporters": [
+      "default",
+      ["./node_modules/jest-html-reporter", {
+      "pageTitle": "Test Report"
+      }]
     ]
   },
   "type": "module",
