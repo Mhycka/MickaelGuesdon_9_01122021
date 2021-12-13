@@ -4,6 +4,7 @@ import Logout from "./Logout.js"
 
 export default class NewBill {
   constructor({ document, onNavigate, firestore, localStorage }) {
+    // console.log(firestore.storage)
     this.document = document
     this.onNavigate = onNavigate
     this.firestore = firestore
@@ -21,26 +22,29 @@ export default class NewBill {
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
 
-    // cross-check on accept="image/png, image/gif, image/jpeg, .pdf"
+    // check format file
     const regexFileAccepted = new RegExp('^.*\.(jpg|jpeg|gif|png|pdf)$', "i");
     if (!regexFileAccepted.test(file.name)) return false;
-    // not need to cover this function by tests
-    if (this.firestore) this.firestore
-      .storage
-      .ref(`justificatifs/${fileName}`)
-      .put(file)
-      .then(snapshot => snapshot.ref.getDownloadURL())
-      .then(url => {
-        this.fileUrl = url
-        this.fileName = fileName
-      })
+    
+      // not need to cover this function by tests
+    if (this.firestore) {
+      this.firestore
+        .storage
+        .ref(`justificatifs/${fileName}`)
+        .put(file)
+        .then(snapshot => snapshot.ref.getDownloadURL())
+        .then(url => {
+          this.fileUrl = url
+          this.fileName = fileName
+        })
+    }
   }
+
   handleSubmit = e => {
     e.preventDefault()
-    //console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
-    const email = JSON.parse(localStorage.getItem("user")).email
-    const bill = {
-      email,
+    const emailElt = JSON.parse(localStorage.getItem("user")).email
+    const billElt = {
+      emailElt,
       type: e.target.querySelector(`select[data-testid="expense-type"]`).value,
       name:  e.target.querySelector(`input[data-testid="expense-name"]`).value,
       amount: parseInt(e.target.querySelector(`input[data-testid="amount"]`).value),
@@ -52,7 +56,7 @@ export default class NewBill {
       fileName: this.fileName,
       status: 'pending'
     }
-    this.createBill(bill)
+    this.createBill(billElt)
     this.onNavigate(ROUTES_PATH['Bills'])
   }
 

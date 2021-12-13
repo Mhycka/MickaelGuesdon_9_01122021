@@ -5,12 +5,12 @@ import { formatDate } from '../app/format.js'
 import Actions from './Actions.js'
 
 
-const row = (bill, elt) => {
+const row = (bill, options) => {
   return (`
     <tr>
       <td>${bill.type}</td>
       <td>${bill.name}</td>
-      <td>${(elt.formatDate) ? formatDate(bill.date) : bill.date}</td>
+      <td>${(options.formatDate) ? formatDate(bill.date) : bill.date}</td>
       <td>${bill.amount} €</td>
       <td>${bill.status}</td>
       <td>
@@ -20,10 +20,10 @@ const row = (bill, elt) => {
     `)
   }
 
-const rows = (data, elt) => {
+const rows = (data, options) => {
   if (data && data.length) {
-    const dataSorted = data.sort((a, b) => (new Date(a.date) < new Date(b.date)) ? 1 : -1);// Order by date
-    return dataSorted.map(bill => row(bill, elt)).join("");
+    const dataSort = data.sort((a, b) => (new Date(a.date) < new Date(b.date)) ? 1 : -1);// Order by date
+    return dataSort.map(bill => row(bill, options)).join("");
   } else return '';
 }
 

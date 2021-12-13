@@ -1,10 +1,10 @@
-import { localStorageMock } from "../__mocks__/localStorage.js";
-import { ROUTES, ROUTES_PATH } from "../constants/routes"
 import { screen, fireEvent } from "@testing-library/dom"
 import BillsUI from "../views/BillsUI.js"
 import { bills } from "../fixtures/bills.js"
 import Bills from "../containers/Bills.js";
 import Router from '../app/Router.js'
+import { localStorageMock } from "../__mocks__/localStorage.js";
+import { ROUTES, ROUTES_PATH } from "../constants/routes"
 import Firestore from "../app/Firestore";
 import firebase from "../__mocks__/firebase";
 
@@ -22,10 +22,9 @@ describe("Given I am connected as an employee", () => {
     })
 
 
-
-    test("Then bills should be ordered from earliest to latest", () => {
-      const html = BillsUI({ data: bills }, {formatDate: false})
-      document.body.innerHTML = html
+    test("Then bills should be ordered", () => {
+      const htmlrender = BillsUI({ data: bills }, {formatDate: false})
+      document.body.innerHTML = htmlrender
       const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i).map(a => a.innerHTML)
       const antiChrono = (a, b) => ((a < b) ? 1 : -1)
       const datesSorted = [...dates].sort(antiChrono)
@@ -33,35 +32,32 @@ describe("Given I am connected as an employee", () => {
     })
 
 
-
-    describe('but it\'s loading', () => {
+    describe('actually loading', () => {
       test('Then i should see Loading page', () => {
-        const html = BillsUI({ loading: true })
-        document.body.innerHTML = html
+        const htmlrender = BillsUI({ loading: true })
+        document.body.innerHTML = htmlrender
         expect(screen.getAllByText('Loading...')).toBeTruthy()
       })
     })
 
 
-
-    describe('but data can\'t be loaded', () => {
+    describe('can/t find data', () => {
       test('Then i should see error page', () => {
-        const html = BillsUI({ error: 'some error message' })
-        document.body.innerHTML = html
+        const htmlrender = BillsUI({ error: 'some error message' })
+        document.body.innerHTML = htmlrender
         expect(screen.getAllByText('Erreur')).toBeTruthy()
       })  
     })
 
 
-
-    describe('and I click on', () => {
+    describe('i click on', () => {
       let billsList;
       beforeEach(() => {
-          Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-          window.localStorage.setItem('user', JSON.stringify({type: 'Employee'}))
+          Object.defineProperty(window, 'localStorage', { value: localStorageMock })// Set localStorage
+          window.localStorage.setItem('user', JSON.stringify({type: 'Employee'}))// Set user as Employee in localStorage
           const html = BillsUI({ data: bills })
           document.body.innerHTML = html
-          $.fn.modal = jest.fn()// Prevent jQuery error
+          $.fn.modal = jest.fn()
           billsList = new Bills({
             document,
             onNavigate: (pathname) => document.body.innerHTML = ROUTES({ pathname }),
@@ -71,59 +67,59 @@ describe("Given I am connected as an employee", () => {
       })
 
       describe('the icon eye', () => {
-        test('Then i should see a modal open', () => {
-          const eyeIcon = screen.getAllByTestId('icon-eye')[0]// Get first
-          const handleClickIconEye = jest.fn(billsList.handleClickIconEye(eyeIcon))      
-          eyeIcon.addEventListener('click', handleClickIconEye)
-          fireEvent.click(eyeIcon)
+        test('Then i should see a modal window', () => {
+          const eyeicon = screen.getAllByTestId('icon-eye')[0]
+          const handleClickIconEye = jest.fn(billsList.handleClickIconEye(eyeicon))      
+          eyeicon.addEventListener('click', handleClickIconEye)
+          fireEvent.click(eyeicon)
           expect(handleClickIconEye).toHaveBeenCalled()
           expect(screen.getByTestId('modaleFile')).toBeTruthy()         
         })
       })
 
-      /**
-       * Test new bill button
-       */
       describe('the New Bill button', () => {
         test('Then it should display the New Bill Page', () => {
           const handleClickNewBill = jest.fn(billsList.handleClickNewBill)
-          const buttonNewBill = screen.getByTestId('btn-new-bill')
-          expect(buttonNewBill).toBeTruthy()
-          buttonNewBill.addEventListener('click', handleClickNewBill)
-          fireEvent.click(buttonNewBill)
+          const btnNewBill = screen.getByTestId('btn-new-bill')
+          expect(btnNewBill).toBeTruthy()
+          btnNewBill.addEventListener('click', handleClickNewBill)
+          fireEvent.click(btnNewBill)
           expect(screen.getByText('Envoyer une note de frais')).toBeTruthy() 
         })        
       })
     })
   })
 
-  /**
-   * GET integration test
-   */
+
+
+
+
+  /* -------------------Integration test Get Bills---------------------*/
+
   describe("When I navigate to Bills Page", () => {
-    test("fetches bills from mock API GET", async () => {
-      const getSpy = jest.spyOn(firebase, "get")       
+    test("fetch bills fom API ", async () => {
+      const spyGet = jest.spyOn(firebase, "get")       
       const userBills = await firebase.get()
-      expect(getSpy).toHaveBeenCalledTimes(1)
+      expect(spyGet).toHaveBeenCalledTimes(1)
       expect(userBills.data.length).toBe(4)
     })
-    test("fetches bills from an API and fails with 404 message error", async () => {
+    test("fetch bills from an API and fails with 404 error", async () => {
       firebase.get.mockImplementationOnce(() =>
         Promise.reject(new Error("Erreur 404"))
       )
-      const html = BillsUI({ error: "Erreur 404" })
-      document.body.innerHTML = html
-      const message = await screen.getByText(/Erreur 404/)
-      expect(message).toBeTruthy()
+      const htmlrender = BillsUI({ error: "Erreur 404" })
+      document.body.innerHTML = htmlrender
+      const messageError = await screen.getByText(/Erreur 404/)
+      expect(messageError).toBeTruthy()
     })
-    test("fetches messages from an API and fails with 500 message error", async () => {
+    test("fetch messages from an API and fails with 500 error", async () => {
       firebase.get.mockImplementationOnce(() =>
         Promise.reject(new Error("Erreur 500"))
       )
-      const html = BillsUI({ error: "Erreur 500" })
-      document.body.innerHTML = html
-      const message = await screen.getByText(/Erreur 500/)
-      expect(message).toBeTruthy()
+      const htmlrender = BillsUI({ error: "Erreur 500" })
+      document.body.innerHTML = htmlrender
+      const messageError = await screen.getByText(/Erreur 500/)
+      expect(messageError).toBeTruthy()
     })
   })
 })

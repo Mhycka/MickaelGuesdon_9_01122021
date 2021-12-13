@@ -23,8 +23,8 @@ export const modal = () => (`
   `)
 
 export default (bill) => {
-  const regexFileViewable = new RegExp('^.*\.(jpg|jpeg|gif|png)$', "i");
-  const regexFileDownloadable = new RegExp('^.*\.(pdf)$', "i");
+  const regexFileView = new RegExp('^.*\.(jpg|jpeg|gif|png)$', "i");
+  const regexFileDl = new RegExp('^.*\.(pdf)$', "i");
 
   return (`
     <div class="container dashboard-form" data-testid="dashboard-form">
@@ -72,12 +72,12 @@ export default (bill) => {
           <label for="file" class="bold-label">Justificatif</label>
             <div class='input-field input-flex file-flex'>
             <span id="file-name-admin">${bill.fileName}</span>
-            ${(regexFileViewable.test(bill.fileName)) ? (`
+            ${(regexFileView.test(bill.fileName)) ? (`
               <div class='icons-container'>
                 <span id="icon-eye-d" data-testid="icon-eye-d" data-bill-url="${bill.fileUrl}"> ${eyeWhite} </span>
               </div>
             `) : ''}
-            ${(regexFileDownloadable.test(bill.fileName)) ? (`
+            ${(regexFileDl.test(bill.fileName)) ? (`
               <div class='icons-container'>
                 <a href="${bill.fileUrl}" download="${bill.fileName}" target="blank">${downloadWhiteIcon}</a>
               </div>

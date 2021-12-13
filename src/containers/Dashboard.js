@@ -11,9 +11,11 @@ export const filteredBills = (data, status) => {
 
       let selectCondition
 
+      // in jest environment
       if (typeof jest !== 'undefined') {
         selectCondition = (bill.status === status)
       } else {
+        // in prod environment
         const userEmail = JSON.parse(localStorage.getItem("user")).email
         selectCondition =
           (bill.status === status) &&
@@ -24,27 +26,16 @@ export const filteredBills = (data, status) => {
     }) : []
 }
 
-/**
- * Render a bill card
- * @param {object} bill 
- * @param {string} bill.type
- * @param {string} bill.date
- * @param {string} bill.id
- * @param {string} bill.email
- * @param {string} bill.name
- * @param {number} bill.amount
- * @returns {HTMLElement}
- */
 export const card = (bill) => {
-  const name = bill.email.split('@')[0].replace('.', ' ');// Format name
-  const date = (bill.date) ? formatDate(bill.date) : 'Aucune date fournis'; // Format date
+  const nameSort = bill.email.split('@')[0].replace('.', ' ');
+  const dateSort = (bill.date) ? formatDate(bill.date) : 'Aucune date fournis';
   const element = document.createElement('div');
   element.classList.add('bill-card');
   element.setAttribute('id', 'open-bill' + bill.id);
   element.dataset.testid = 'open-bill' + bill.id;
   element.innerHTML = `
     <div class='bill-card-name-container'>
-      <div class='bill-card-name'>${name}</div>
+      <div class='bill-card-name'>${nameSort}</div>
       <span class='bill-card-grey'> ... </span>
     </div>
     <div class='name-price-container'>
@@ -52,7 +43,7 @@ export const card = (bill) => {
       <span> ${bill.amount} € </span>
     </div>
     <div class='date-type-container'>
-      <span> ${date} </span>
+      <span> ${dateSort} </span>
       <span> ${bill.type} </span>
     </div>
   `;
@@ -89,15 +80,21 @@ export default class {
   }
 
   handleClickIconEye = () => {
-    const billUrl = $('#icon-eye-d').attr("data-bill-url")
-    const imgWidth = '100%';//Math.floor($('#modaleFileAdmin1').width() * 0.8)
-    $('#modaleFileAdmin1').find(".modal-body").html(`<div style='text-align: center;'><img width=${imgWidth} src=${billUrl} /></div>`)
+    const billUrlelt = $('#icon-eye-d').attr("data-bill-url")
+    const imgWidthedit = '100%';
+    $('#modaleFileAdmin1').find(".modal-body").html(`<div style='text-align: center;'><img width=${imgWidthedit} src=${billUrlelt} /></div>`)
     if (typeof $('#modaleFileAdmin1').modal === 'function') $('#modaleFileAdmin1').modal('show')
   }
 
   handleEditTicket(e, bill, bills) {
-    if (this.counter === undefined || this.id !== bill.id) this.counter = 0
-    if (this.id === undefined || this.id !== bill.id) this.id = bill.id
+    if (this.counter === undefined || this.id !== bill.id) {
+      this.counter = 0 
+    }
+
+    if (this.id === undefined || this.id !== bill.id) {
+      this.id = bill.id
+    }
+
     if (this.counter % 2 === 0) {
       bills.forEach(b => {
         $(`#open-bill${b.id}`).css({ background: '#0D5AE5' })
@@ -121,50 +118,45 @@ export default class {
   }
 
   handleAcceptSubmit = (e, bill) => {
-    const newBill = {
+    const newBillelt = {
       ...bill,
       status: 'accepted',
       commentAdmin: $('#commentary2').val()
     }
-    this.updateBill(newBill)
+    this.updateBill(newBillelt)
     this.onNavigate(ROUTES_PATH['Dashboard'])
   }
 
   handleRefuseSubmit = (e, bill) => {
-    const newBill = {
+    const newBillelt = {
       ...bill,
       status: 'refused',
       commentAdmin: $('#commentary2').val()
     }
-    this.updateBill(newBill)
+    this.updateBill(newBillelt)
     this.onNavigate(ROUTES_PATH['Dashboard'])
   }
-  /**
-   * handleShowTickets
-   * @param {MouseEvent} e 
-   * @param {Array} bills 
-   * @param {number} index 
-   * @returns {Array}
-   */
+
+
   handleShowTickets(e, bills, index) {
-    this.billsStatusState[index] = !this.billsStatusState[index];// Toggle
+    this.billsStatusState[index] = !this.billsStatusState[index];
     this.index = index;
     const elArrow = document.getElementById('arrow-icon' + index);
-    const elContainer = document.getElementById('status-bills-container' + index);
-    if (this.billsStatusState[index]) {// Show bills
+    const billsContainer = document.getElementById('status-bills-container' + index);
+    if (this.billsStatusState[index]) {
       elArrow.style.transform = 'rotate(0deg)';
       const status = getStatus(index);
       const filteredData = filteredBills(bills, status);
       filteredData.forEach((bill) => {
-        const el = card(bill);
-        el.addEventListener('click', (e) => {
+        const eltBill = card(bill);
+        eltBill.addEventListener('click', (e) => {
           this.handleEditTicket(e, bill, bills)
         })
-        elContainer.append(el);
+        billsContainer.append(eltBill);
       })
-    } else {// Hide Bills
+    } else {
       elArrow.style.transform = 'rotate(90deg)';
-      elContainer.innerHTML = '';
+      billsContainer.innerHTML = '';
     }
     return bills;
   }

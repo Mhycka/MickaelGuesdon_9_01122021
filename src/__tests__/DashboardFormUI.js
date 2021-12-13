@@ -35,9 +35,10 @@ const billrefused = {
 
 describe('Given I am connected as an Admin and I am on Dashboard Page', () => {
   describe('When bill data is passed to DashboardUI', () => {
-    test(('Then, it should them in the page'), () => {
-      const html = DashboardFormUI(bill)
-      document.body.innerHTML = html
+    test(('Then, it posted in page'), () => {
+      const htmlrender = DashboardFormUI(bill)
+      document.body.innerHTML = htmlrender
+
       expect(screen.getByText(bill.vat)).toBeTruthy()
       expect(screen.getByText(bill.type)).toBeTruthy()
       expect(screen.getByText(bill.commentary)).toBeTruthy()
@@ -48,26 +49,30 @@ describe('Given I am connected as an Admin and I am on Dashboard Page', () => {
       expect(screen.getByText(bill.pct.toString())).toBeTruthy()
     })
   })
+
+
   describe('When pending bill is passed to DashboardUI', () => {
-    test(('Then, it should show button and textArea'), () => {
-      const html = DashboardFormUI(billPending)
-      document.body.innerHTML = html
+    test(('Then, i can see button and textArea'), () => {
+      const htmlrender = DashboardFormUI(billPending)
+      document.body.innerHTML = htmlrender
       expect(screen.getByText("Accepter")).toBeTruthy()
       expect(screen.getByText("Refuser")).toBeTruthy()
       expect(screen.getByTestId("commentary2")).toBeTruthy()
     })
   })
+
+
   describe('When accepted bill is passed to DashboardUI', () => {
-    test(('Then, it should show admin commentary'), () => {
-      const html = DashboardFormUI(billAccepted)
-      document.body.innerHTML = html
+    test(('Then, i can see admin commentary'), () => {
+      const htmlrender = DashboardFormUI(billAccepted)
+      document.body.innerHTML = htmlrender
       expect(screen.getByText(bill.commentAdmin)).toBeTruthy()
     })
   })
   describe('When acceptrefuseded bill is passed to DashboardUI', () => {
-    test(('Then, it should show admin commentary'), () => {
-      const html = DashboardFormUI(billrefused)
-      document.body.innerHTML = html
+    test(('Then, i can see admin commentary'), () => {
+      const htmlrender = DashboardFormUI(billrefused)
+      document.body.innerHTML = htmlrender
       expect(screen.getByText(bill.commentAdmin)).toBeTruthy()
     })
   })

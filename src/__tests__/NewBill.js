@@ -5,15 +5,16 @@ import BillsUI from "../views/BillsUI.js"
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import { ROUTES } from '../constants/routes.js'
 import firebase from "../__mocks__/firebase"
-import Firestore from "../app/Firestore";
+// import firestore from "../app/Firestore"
+// import { bills } from "../fixtures/bills.js"
 
 describe("Given I am connected as an employee and on NewBill Page", () => {
   let newBill;
   beforeEach(() => {
     Object.defineProperty(window, 'localStorage', { value: localStorageMock })// Set localStorage
     window.localStorage.setItem('user', JSON.stringify({type: 'Employee'}))// Set user as Employee in localStorage
-    const html = NewBillUI()
-    document.body.innerHTML = html
+    const htmlrender = NewBillUI()
+    document.body.innerHTML = htmlrender
     newBill = new NewBill({
       document,
       onNavigate: (pathname) => document.body.innerHTML = ROUTES({ pathname }),
@@ -25,20 +26,55 @@ describe("Given I am connected as an employee and on NewBill Page", () => {
   describe("When I select a file", () => {
     test("Then it should be changed in the input", () => {
       const handleChangeFile = jest.fn(newBill.handleChangeFile)
-      const inputFile = screen.getByTestId("file")
-      inputFile.addEventListener('change', handleChangeFile)
-      fireEvent.change(inputFile, {
+      const inputFileelt = screen.getByTestId("file")
+      newBill.firestore = null;
+      inputFileelt.addEventListener('change', handleChangeFile)
+      fireEvent.change(inputFileelt, {
         target: {
           files: [new File(["myProof.png"], "myProof.png", { type: "image/png" })]
         }
       })
       expect(handleChangeFile).toHaveBeenCalled();
-      expect(inputFile.files[0].name).toBe("myProof.png");
+      expect(inputFileelt.files[0].name).toBe("myProof.png");
     })
   })
 
+  describe("When I select a false file", () => {
+    test("Then it should be changed in the input", () => {
+      const handleChangeFile = jest.fn(newBill.handleChangeFile)
+      const inputFileelt = screen.getByTestId("file")
+      newBill.firestore = null;
+      inputFileelt.addEventListener('change', handleChangeFile)
+      fireEvent.change(inputFileelt, {
+        target: {
+          files: [new File(["myProof.bmp"], "myProof.bmp", { type: "image/bmp" })]
+        }
+      })
+      expect(handleChangeFile).toHaveBeenCalled();
+      expect(inputFileelt.files[0].name).toBe("myProof.bmp");
+    })
+  })
 
-  
+  // describe("When I select a false file", () => {
+  //   test("Then it should be changed firestore in the input", () => {
+     
+
+  //     const handleChangeFile = jest.fn(newBill.handleChangeFile)
+  //     const inputFile = screen.getByTestId("file")
+  //     newBill.firestore =  firestore;
+  //     newBill.firestore.storage =  firebase.data;
+  //     console.log( newBill.firestore)
+  //     inputFile.addEventListener('change', handleChangeFile)
+  //     fireEvent.change(inputFile, {
+  //       target: {
+  //         files: [new File(["myProof.png"], "myProof.png", { type: "image/png" })]
+  //       }
+  //     })
+  //     expect(handleChangeFile).toHaveBeenCalled();
+  //    expect(inputFile.files[0].name).toBe("myProof.png");
+  //   })
+  // })
+
   describe("When I submit the form", () => {
     test('It should create a new bill', () => {
       const handleSubmit = jest.fn(newBill.handleSubmit)
@@ -50,12 +86,11 @@ describe("Given I am connected as an employee and on NewBill Page", () => {
   })
 })
 
-/**
- * POST integration test
- */
+/*------------------post integration  test-----------------*/
+
  describe("Given I am connected as an employee", () => {
   describe("When I create a new bill", () => {
-    const bill = {
+    const billtest = {
       "id": "47qAXb6fIm2zOKkLzMro",
       "vat": "80",
       "fileName": "preview-facture-free-202105-pdf-1.jpg",
@@ -73,7 +108,7 @@ describe("Given I am connected as an employee and on NewBill Page", () => {
 
     test("post bill from mock API POST", async () => {
       const getSpy = jest.spyOn(firebase, "post")
-      const request = await firebase.post(bill)
+      const request = await firebase.post(billtest)
       expect(request.status).toBe(200)
     })
 
@@ -81,23 +116,20 @@ describe("Given I am connected as an employee and on NewBill Page", () => {
       firebase.post.mockImplementationOnce(() =>
         Promise.reject(new Error("Erreur 404"))
       )
-      const html = BillsUI({ error: "Erreur 404" })
-      document.body.innerHTML = html
-      const message = await screen.getByText(/Erreur 404/)
-      expect(message).toBeTruthy()
+      const htmlrender = BillsUI({ error: "Erreur 404" })
+      document.body.innerHTML = htmlrender
+      const messageError = await screen.getByText(/Erreur 404/)
+      expect(messageError).toBeTruthy()
     })
 
-    /**
-     * 500
-     */
     test("post bill from mock API POST and fails with 500 message error", async () => {
       firebase.post.mockImplementationOnce(() =>
         Promise.reject(new Error("Erreur 500"))
       )
-      const html = BillsUI({ error: "Erreur 500" })
-      document.body.innerHTML = html
-      const message = await screen.getByText(/Erreur 500/)
-      expect(message).toBeTruthy()
+      const htmlrender = BillsUI({ error: "Erreur 500" })
+      document.body.innerHTML = htmlrender
+      const messageError = await screen.getByText(/Erreur 500/)
+      expect(messageError).toBeTruthy()
     })
   })
  })

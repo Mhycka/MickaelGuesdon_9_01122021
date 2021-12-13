@@ -63,8 +63,7 @@ export default {
       }]
     })
   },
-
-  post: (bill) => {
+  post: (eachBill) => {
     return Promise.resolve({
       status: 200
     })
