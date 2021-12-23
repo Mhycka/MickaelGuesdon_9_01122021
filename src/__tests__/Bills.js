@@ -97,7 +97,7 @@ describe("Given I am connected as an employee", () => {
   /* -------------------Integration test Get Bills---------------------*/
 
   describe("When I navigate to Bills Page", () => {
-    test("fetch bills fom API ", async () => {
+    test("fetch bills from API ", async () => {
       const spyGet = jest.spyOn(firebase, "get")       
       const userBills = await firebase.get()
       expect(spyGet).toHaveBeenCalledTimes(1)
